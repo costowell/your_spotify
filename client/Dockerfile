@@ -21,6 +21,7 @@ RUN yarn --frozen-lockfile --dev
 COPY src/ src/
 COPY public/ public/
 
-RUN sh scripts/build/*.sh
+RUN sh scripts/build/10-build_react.sh
+RUN sh scripts/build/20-variables.sh
 
 ENTRYPOINT [ "sh", "/app/scripts/run/run.sh" ]
