@@ -3,11 +3,14 @@
 if [[ "$NODE_ENV" == "development" ]]
 then
     # Modify the dev file
-    VAR_PATH="/app/public"
+    VAR_PATH="public"
 else
     # Modify the built file
-    VAR_PATH="/app/build"
+    VAR_PATH="build"
 fi
+
+echo "$VAR_PATH"
+ls "$VAR_PATH"
 
 cp "$VAR_PATH/variables-template.js" "$VAR_PATH/variables.js"
 
@@ -18,6 +21,7 @@ then
 
     # Editing meta image urls
     sed -i "s;image\" content=\"\(.[^\"]*\);image\" content=\"$API_ENDPOINT/static/your_spotify_1200.png;g" "$VAR_PATH/index.html"
+    cat "$VAR_PATH/variables.js"
 else
     echo "API_ENDPOINT is not defined, web app won't work"
     exit 1
