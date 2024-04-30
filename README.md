@@ -91,41 +91,40 @@ You can follow the instructions [here](https://github.com/Yooooomi/your_spotify/
 | API_ENDPOINT          | REQUIRED | The endpoint of your server |
 | SPOTIFY_PUBLIC        | REQUIRED | The public key of your Spotify application (cf [Creating the Spotify Application](#creating-the-spotify-application)) |
 | SPOTIFY_SECRET        | REQUIRED | The secret key of your Spotify application (cf [Creating the Spotify Application](#creating-the-spotify-application)) |
-| CORS                  | _not defined_ | List of comma-separated origin allowed, or _nothing_ to allow any origin |
-| MAX_IMPORT_CACHE_SIZE | Infinite | The maximum element in the cache when importing data from an outside source, more cache means less requests to Spotify, resulting in faster imports |
-| MONGO_ENDPOINT        | mongodb://mongo:27017/your_spotify | The endpoint of the Mongo database, where **mongo** is the name of your service in the compose file |
-| PORT                  | 8080 | The port of the server, do not modify if you're using docker |
 | TIMEZONE              | Europe/Paris | The timezone of your stats, only affects read requests since data is saved with UTC time |
+| MONGO_ENDPOINT        | mongodb://mongo:27017/your_spotify | The endpoint of the Mongo database, where **mongo** is the name of your service in the compose file |
 | LOG_LEVEL             | info | The log level, debug is useful if you encouter any bugs |
-| COOKIE_VALIDITY_MS | 1h | Validity time of the authentication cookie, following [this pattern](https://github.com/vercel/ms) |
+| CORS                  | _not defined_ | List of comma-separated origin allowed |
+| COOKIE_VALIDITY_MS    | 1h | Validity time of the authentication cookie, following [this pattern](https://github.com/vercel/ms) |
+| MAX_IMPORT_CACHE_SIZE | Infinite | The maximum element in the cache when importing data from an outside source, more cache means less requests to Spotify, resulting in faster imports |
 | MONGO_NO_ADMIN_RIGHTS | false | Do not ask for admin right on the Mongo database |
+| PORT                  | 8080 | The port of the server, **do not** modify if you're using docker |
+| FRAME_ANCESTORS       | _not defined_ | Sites allowed to frame the website, comma separated list of URLs (`i-want-a-security-vulnerability-and-want-to-allow-all-frame-ancestors` to allow every website) |
 
 ## CORS
 
-You can edit the CORS for the server:
-
-- `all` will allow every source.
+- Not defining it will default to authorize only the `CLIENT_ENDPOINT` origin.
 - `origin1,origin2` will allow `origin1` and `origin2`.
+> If you really want to allow every origin no matter what, you can set the `CORS` value to `i-want-a-security-vulnerability-and-want-to-allow-all-origins`.
 
 # Creating the Spotify Application
 
 For **YourSpotify** to work you need to provide a Spotify application **public** AND **secret** to the server environment.
 To do so, you need to create a **Spotify application** [here](https://developer.spotify.com/dashboard/applications).
 
-1. Click on **Create a client ID**.
-2. Fill out all the informations.
-3. Copy the **public** and the **secret** key into your `docker-compose` file under the name of `SPOTIFY_PUBLIC` and `SPOTIFY_SECRET`
+1. Click on **Create app**.
+2. Fill out all the information.
+3. Set the redirect URI, corresponding to your **server** location on the internet (or your local network) adding the suffix **/oauth/spotify/callback** (**/api/oauth/spotify/callback** if using the [linuxserver](https://github.com/linuxserver/docker-your_spotify) image).
+- i.e: `http://localhost:8080/oauth/spotify/callback` or `http://home.mydomain.com/your_spotify_backend/oauth/spotify/callback`
+4. Check **Web API**
+5. Check **I understand and agree**
+6. Hit **Settings** at the top right corner
+7. Copy the **public** and the **secret** key into your `docker-compose` file under the name of `SPOTIFY_PUBLIC` and `SPOTIFY_SECRET`
    respectively.
-4. Add an authorized redirect URI corresponding to your **server** location on the internet adding the suffix **/oauth/spotify/callback**.
-   1. use the `EDIT SETTINGS` button on the top right corner of the page.
-   2. add your URI under the `Redirect URIs` section.
-   - i.e: `http://localhost:8080/oauth/spotify/callback` or `http://home.mydomain.com/your_spotify_backend/oauth/spotify/callback`
-   3. Do not forget to hit the save button at the bottom of the popup.
-5. Once you have created your application, Spotify wants you to register the users that will be able to access the application. (You don't need to do that for the account that created the application)
-   1. Click the **Users and access** button
-   2. Click the **Add new user** button
-   3. Enter the required information, a name and the email the user's spotify account has been created with.
-   4. (Optional) You can **Request extension** if you do not want to register the users by hand.
+8. Once you have created your application, Spotify wants you to register the users that will be able to access the application. (You don't need to do that for the account that created the application)
+   1. Click the **User Management** button
+   2. Enter the required information, a name and the email the user's Spotify account has been created with.
+   3. (Optional) You can **Request extension** if you do not want to register the users by hand.
 
 # Importing past history
 
@@ -145,7 +144,7 @@ The import process uses cache to limit requests to the Spotify API. By default, 
 - Input your files starting with `StreamingHistoryX.json`.
 - Start your import.
 
-### Full privacy data
+### Full privacy data (recommended)
 
 > Takes a maximum of 30 days.
 > Gets you the whole history since the creation of your account.
